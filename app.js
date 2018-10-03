@@ -1,6 +1,8 @@
 var express= require("express");
 var app = express();
 var BodyParser= require("body-parser")
+var mongoose = require("mongoose");
+mongoose.connect("mongodb://localhost/yelpcamp");
 
 app.set("view engine","ejs");
 app.use(BodyParser.urlencoded({extended : true}));
@@ -11,13 +13,20 @@ app.use(function(req, res, next) {
   next();
 });
 
+var CampgroundSchema= new mongoose.Schema({
+  name:String,
+  image:String
+});
+
+var Campground = mongoose.model("Campground",CampgroundSchema);
+
 var campgrounds=[
-            {name:"Salmon Creek",image:"https://pixabay.com/get/e83db50a21f4073ed1584d05fb1d4e97e07ee3d21cac104496f3c070a4e5b4b9_340.jpg"},
-            {name:"Granite Hill",image:"https://pixabay.com/get/e834b5062cf4033ed1584d05fb1d4e97e07ee3d21cac104496f3c070a4e5b4b9_340.jpg"},
-            {name:"Mount Goat's Rest",image:"https://pixabay.com/get/e83db40e28fd033ed1584d05fb1d4e97e07ee3d21cac104496f3c070a4e5b4b9_340.jpg"},
-            {name:"Salmon Creek",image:"https://pixabay.com/get/e83db50a21f4073ed1584d05fb1d4e97e07ee3d21cac104496f3c070a4e5b4b9_340.jpg"},
-            {name:"Granite Hill",image:"https://pixabay.com/get/e834b5062cf4033ed1584d05fb1d4e97e07ee3d21cac104496f3c070a4e5b4b9_340.jpg"},
-            {name:"Mount Goat's Rest",image:"https://pixabay.com/get/e83db40e28fd033ed1584d05fb1d4e97e07ee3d21cac104496f3c070a4e5b4b9_340.jpg"}
+            {name:"Salmon Creek",image:"https://cdn.pixabay.com/photo/2014/11/27/18/36/tent-548022__340.jpg"},
+            {name:"Granite Hill",image:"https://cdn.pixabay.com/photo/2016/02/18/22/16/tent-1208201__340.jpg"},
+            {name:"Mount Goat's Rest",image:"https://cdn.pixabay.com/photo/2016/11/21/15/14/camping-1845906__340.jpg"},
+            {name:"Salmon Creek",image:"https://cdn.pixabay.com/photo/2015/07/10/17/24/night-839807__340.jpg"},
+            {name:"Granite Hill",image:"https://cdn.pixabay.com/photo/2017/08/04/20/04/camping-2581242__340.jpg"},
+            {name:"Mount Goat's Rest",image:"https://cdn.pixabay.com/photo/2016/03/30/02/57/camping-1289930__340.jpg"}
        ] 
 app.get("/",function(req,res){
    res.render("landing");
@@ -39,14 +48,6 @@ app.get("/campgrounds/new",function(req, res) {
    res.render("new"); 
 });
 
-app.get("/rest",function(req, res) {
-    var data = {
-    "Fruits": [
-      "apple",
-      "orange"    ]
-  };
-   res.json(data) ;
-});
 
 app.listen(process.env.PORT,process.env.IP,function(){
     console.log("Server started!!");
