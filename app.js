@@ -20,6 +20,18 @@ var CampgroundSchema= new mongoose.Schema({
 
 var Campground = mongoose.model("Campground",CampgroundSchema);
 
+Campground.create({
+    name:"Salmon Creek",
+    image:"https://cdn.pixabay.com/photo/2014/11/27/18/36/tent-548022__340.jpg"
+},function(err,camp){
+    if(err){
+        console.log(err);
+    }  
+    else{
+        console.log(camp);
+    }
+});
+
 var campgrounds=[
             {name:"Salmon Creek",image:"https://cdn.pixabay.com/photo/2014/11/27/18/36/tent-548022__340.jpg"},
             {name:"Granite Hill",image:"https://cdn.pixabay.com/photo/2016/02/18/22/16/tent-1208201__340.jpg"},
