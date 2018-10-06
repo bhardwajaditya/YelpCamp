@@ -20,10 +20,7 @@ var CampgroundSchema= new mongoose.Schema({
 
 var Campground = mongoose.model("Campground",CampgroundSchema);
 
-Campground.create({
-    name:"Salmon Creek",
-    image:"https://cdn.pixabay.com/photo/2014/11/27/18/36/tent-548022__340.jpg"
-},function(err,camp){
+Campground.create( {name:"Mount Rest",image:"https://cdn.pixabay.com/photo/2015/06/08/15/12/tents-801926__340.jpg"},function(err,camp){
     if(err){
         console.log(err);
     }  
@@ -32,27 +29,35 @@ Campground.create({
     }
 });
 
-var campgrounds=[
-            {name:"Salmon Creek",image:"https://cdn.pixabay.com/photo/2014/11/27/18/36/tent-548022__340.jpg"},
-            {name:"Granite Hill",image:"https://cdn.pixabay.com/photo/2016/02/18/22/16/tent-1208201__340.jpg"},
-            {name:"Mount Goat's Rest",image:"https://cdn.pixabay.com/photo/2016/11/21/15/14/camping-1845906__340.jpg"},
-            {name:"Salmon Creek",image:"https://cdn.pixabay.com/photo/2015/07/10/17/24/night-839807__340.jpg"},
-            {name:"Granite Hill",image:"https://cdn.pixabay.com/photo/2017/08/04/20/04/camping-2581242__340.jpg"},
-            {name:"Mount Goat's Rest",image:"https://cdn.pixabay.com/photo/2016/03/30/02/57/camping-1289930__340.jpg"}
-       ] 
+
 app.get("/",function(req,res){
    res.render("landing");
 });
 
 app.get("/campgrounds",function(req,res){
-   
-       res.render("campgrounds",{campgrounds:campgrounds});
+       Campground.find({},function(err,camp){
+           if(err){
+               console.log(err);
+           }
+           else{
+               res.render("campgrounds",{campgrounds:camp});
+           }
+       });
+    //   res.render("campgrounds",{campgrounds:campgrounds});
 });
 
 app.post("/campgrounds",function(req,res){
     var name=req.body.name;
     var image=req.body.image;
-    campgrounds.push({name:name,image:image});
+    Campground.create({name:name,image:image},function(err,camp){
+       if(err){
+           console.log(err);
+       } 
+       else{
+           console.log(camp);
+       }
+    });
+    
    res.redirect("/campgrounds") ;
 });
 
