@@ -20,14 +20,14 @@ var CampgroundSchema= new mongoose.Schema({
 
 var Campground = mongoose.model("Campground",CampgroundSchema);
 
-Campground.create( {name:"Mount Rest",image:"https://cdn.pixabay.com/photo/2015/06/08/15/12/tents-801926__340.jpg"},function(err,camp){
-    if(err){
-        console.log(err);
-    }  
-    else{
-        console.log(camp);
-    }
-});
+// Campground.create( {name:"Mount Rest",image:"https://cdn.pixabay.com/photo/2015/06/08/15/12/tents-801926__340.jpg"},function(err,camp){
+//     if(err){
+//         console.log(err);
+//     }  
+//     else{
+//         console.log(camp);
+//     }
+// });
 
 
 app.get("/",function(req,res){
