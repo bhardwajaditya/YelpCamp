@@ -15,7 +15,8 @@ app.use(function(req, res, next) {
 
 var CampgroundSchema= new mongoose.Schema({
   name:String,
-  image:String
+  image:String,
+  description: String
 });
 
 var Campground = mongoose.model("Campground",CampgroundSchema);
@@ -63,6 +64,22 @@ app.post("/campgrounds",function(req,res){
 
 app.get("/campgrounds/new",function(req, res) {
    res.render("new"); 
+});
+
+app.get("/campgrounds/:id",function(req,res){
+    
+});
+
+app.get("/getcamp",function(req,res){
+       Campground.find({},function(err,camp){
+           if(err){
+               console.log(err);
+           }
+           else{
+               res.send(camp);
+           }
+       });
+    //   res.render("campgrounds",{campgrounds:campgrounds});
 });
 
 
