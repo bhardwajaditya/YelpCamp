@@ -2,6 +2,10 @@ var express= require("express");
 var app = express();
 var BodyParser= require("body-parser")
 var mongoose = require("mongoose");
+var Campground = require("./models/campgrounds");
+var seedDB = require("./seeds");
+
+seedDB();
 mongoose.connect("mongodb://localhost/yelpcamp");
 
 app.set("view engine","ejs");
@@ -13,13 +17,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-var CampgroundSchema= new mongoose.Schema({
-  name:String,
-  image:String,
-  description: String
-});
 
-var Campground = mongoose.model("Campground",CampgroundSchema);
 
 // Campground.create( {name:"Mount Rest",image:"https://cdn.pixabay.com/photo/2015/06/08/15/12/tents-801926__340.jpg"},function(err,camp){
 //     if(err){
