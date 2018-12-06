@@ -3,6 +3,7 @@ var app = express();
 var BodyParser= require("body-parser")
 var mongoose = require("mongoose");
 var Campground = require("./models/campgrounds");
+var Comment   = require("./models/comments");
 var seedDB = require("./seeds");
 
 seedDB();
@@ -67,6 +68,7 @@ app.get("/campgrounds/new",function(req, res) {
 
 app.get("/campgrounds/:id",function(req,res){
     var id= req.params.id;
+    var url="/campgrounds/"+id+"/comments";
     Campground.findOne({_id:id}).populate("comments").exec(function(err, camp) {
         if(err){
             console.log(err);
@@ -74,10 +76,37 @@ app.get("/campgrounds/:id",function(req,res){
         else{
 
             console.log(camp);
-            res.render("show",{camp:camp});
+            res.render("show",{camp:camp,url:url});
         }
     })
     
+});
+
+app.post("/campgrounds/:id/comments",function(req, res) {
+    var id= req.params.id;
+    var url="/campgrounds/"+id;
+   Campground.findOne({_id:id}).populate("comments").exec(function(err, camp) {
+        if(err){
+            console.log(err);
+        }
+        else{
+            Comment.create(
+                            {
+                                text: req.body.text,
+                                author: req.body.author
+                            }, function(err, comment){
+                                if(err){
+                                    console.log(err);
+                                } else {
+                                    camp.comments.push(comment);
+                                    camp.save();
+                                    console.log("Created new comment");
+                                }
+                            });
+            
+            res.redirect(url);
+        }
+    })
 });
 
 app.get("/getcamp",function(req,res){
