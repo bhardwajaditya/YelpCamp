@@ -90,11 +90,7 @@ app.post("/campgrounds/:id/comments",function(req, res) {
             console.log(err);
         }
         else{
-            Comment.create(
-                            {
-                                text: req.body.text,
-                                author: req.body.author
-                            }, function(err, comment){
+            Comment.create(req.body.comment, function(err, comment){
                                 if(err){
                                     console.log(err);
                                 } else {
