@@ -11,6 +11,8 @@ mongoose.connect("mongodb://localhost/yelpcamp");
 
 app.set("view engine","ejs");
 app.use(BodyParser.urlencoded({extended : true}));
+app.use(express.static(__dirname + "/public"));
+
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -80,6 +82,10 @@ app.get("/campgrounds/:id",function(req,res){
         }
     })
     
+});
+
+app.get("/campgrounds/:id/comments/new",function(req, res) {
+    res.render("newComment",{id:req.params.id});
 });
 
 app.post("/campgrounds/:id/comments",function(req, res) {
