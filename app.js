@@ -3,15 +3,22 @@ var app = express();
 var BodyParser= require("body-parser")
 var mongoose = require("mongoose");
 var Campground = require("./models/campgrounds");
+var User = require("./models/users");
 var Comment   = require("./models/comments");
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
+var passportLocalMongoose = require("passport-local-mongoose");
 var seedDB = require("./seeds");
 
+var campgroundsRoutes = require("./routes/campgrounds"),
+    commentRoutes = require("./routes/comments"),
+    authRoutes = require("./routes/auth")
 seedDB();
 mongoose.connect("mongodb://localhost/yelpcamp");
 
 app.set("view engine","ejs");
 app.use(BodyParser.urlencoded({extended : true}));
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(__dirname+"/public"));
 
 
 app.use(function(req, res, next) {
@@ -20,108 +27,28 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(require("express-session")({
+    secret:"Welcome to the yelpcamp",
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
-// Campground.create( {name:"Mount Rest",image:"https://cdn.pixabay.com/photo/2015/06/08/15/12/tents-801926__340.jpg"},function(err,camp){
-//     if(err){
-//         console.log(err);
-//     }  
-//     else{
-//         console.log(camp);
-//     }
-// });
-
-
-app.get("/",function(req,res){
-   res.render("landing");
+app.use(function(req, res, next) {
+   res.locals.currentUser = req.user;
+   next();
 });
 
-app.get("/campgrounds",function(req,res){
-       Campground.find({},function(err,camp){
-           if(err){
-               console.log(err);
-           }
-           else{
-               res.render("campgrounds",{campgrounds:camp});
-           }
-       });
-    //   res.render("campgrounds",{campgrounds:campgrounds});
-});
-
-app.post("/campgrounds",function(req,res){
-    var name=req.body.name;
-    var image=req.body.image;
-    var description = req.body.description;
-    Campground.create({name:name,image:image,description:description},function(err,camp){
-       if(err){
-           console.log(err);
-       } 
-       else{
-           console.log(camp);
-       }
-    });
-    
-   res.redirect("/campgrounds") ;
-});
-
-app.get("/campgrounds/new",function(req, res) {
-   res.render("new"); 
-});
-
-app.get("/campgrounds/:id",function(req,res){
-    var id= req.params.id;
-    var url="/campgrounds/"+id+"/comments";
-    Campground.findOne({_id:id}).populate("comments").exec(function(err, camp) {
-        if(err){
-            console.log(err);
-        }
-        else{
-
-            console.log(camp);
-            res.render("show",{camp:camp,url:url});
-        }
-    })
-    
-});
-
-app.get("/campgrounds/:id/comments/new",function(req, res) {
-    res.render("newComment",{id:req.params.id});
-});
-
-app.post("/campgrounds/:id/comments",function(req, res) {
-    var id= req.params.id;
-    var url="/campgrounds/"+id;
-   Campground.findOne({_id:id}).populate("comments").exec(function(err, camp) {
-        if(err){
-            console.log(err);
-        }
-        else{
-            Comment.create(req.body.comment, function(err, comment){
-                                if(err){
-                                    console.log(err);
-                                } else {
-                                    camp.comments.push(comment);
-                                    camp.save();
-                                    console.log("Created new comment");
-                                }
-                            });
-            
-            res.redirect(url);
-        }
-    })
-});
-
-app.get("/getcamp",function(req,res){
-       Campground.find({},function(err,camp){
-           if(err){
-               console.log(err);
-           }
-           else{
-               res.send(camp);
-           }
-       });
-    //   res.render("campgrounds",{campgrounds:campgrounds});
-});
+app.use(authRoutes);
+app.use("/campgrounds",campgroundsRoutes);
+app.use("/campgrounds/:id",commentRoutes);
 
 
 app.listen(process.env.PORT,process.env.IP,function(){
