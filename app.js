@@ -13,7 +13,7 @@ var seedDB = require("./seeds");
 var campgroundsRoutes = require("./routes/campgrounds"),
     commentRoutes = require("./routes/comments"),
     authRoutes = require("./routes/auth")
-seedDB();
+// seedDB();
 mongoose.connect("mongodb://localhost/yelpcamp");
 
 app.set("view engine","ejs");

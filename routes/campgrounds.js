@@ -14,11 +14,15 @@ router.get("/",function(req,res){
     //   res.render("campgrounds",{campgrounds:campgrounds});
 });
 
-router.post("/",function(req,res){
+router.post("/",isLoggedIn,function(req,res){
     var name=req.body.name;
     var image=req.body.image;
     var description = req.body.description;
-    Campground.create({name:name,image:image,description:description},function(err,camp){
+    var author={
+        id: req.user._id,
+        username:req.user.username
+    }
+    Campground.create({name:name,image:image,description:description,author:author},function(err,camp){
        if(err){
            console.log(err);
        } 
@@ -30,11 +34,11 @@ router.post("/",function(req,res){
    res.redirect("/campgrounds") ;
 });
 
-router.get("/new",function(req, res) {
+router.get("/new",isLoggedIn,function(req, res) {
    res.render("new",{currentUser:req.user}); 
 });
 
-router.get("/:id",function(req,res){
+router.get("/:id", function(req,res){
     var id= req.params.id;
     var url="/campgrounds/"+id+"/comments";
     Campground.findOne({_id:id}).populate("comments").exec(function(err, camp) {
@@ -43,11 +47,17 @@ router.get("/:id",function(req,res){
         }
         else{
 
-            console.log(camp);
             res.render("show",{camp:camp,url:url});
         }
     })
     
 });
+
+function isLoggedIn(req,res,next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+    res.redirect("/login");
+}
 
 module.exports = router;
