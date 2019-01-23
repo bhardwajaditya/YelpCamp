@@ -4,6 +4,7 @@ var BodyParser= require("body-parser")
 var mongoose = require("mongoose");
 var Campground = require("./models/campgrounds");
 var User = require("./models/users");
+var methodOverride = require("method-override");
 var Comment   = require("./models/comments");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
@@ -18,6 +19,7 @@ mongoose.connect("mongodb://localhost/yelpcamp");
 
 app.set("view engine","ejs");
 app.use(BodyParser.urlencoded({extended : true}));
+app.use(methodOverride("_method"));
 app.use(express.static(__dirname+"/public"));
 
 
