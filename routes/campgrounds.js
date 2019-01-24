@@ -53,21 +53,17 @@ router.get("/:id", function(req,res){
     
 });
 
-router.get("/:id/edit",function(req, res) {
+router.get("/:id/edit",checkOwnership,function(req, res) {
    var id = req.params.id;
    
-   Campground.findOne({_id:id}).populate("comments").exec(function(err, camp) {
-        if(err){
-            console.log(err);
-        }
-        else{
+    Campground.findOne({_id:id}).populate("comments").exec(function(err, camp) {
+        res.render("edit",{camp:camp});
+    });
+   });
+   
+   
 
-            res.render("edit",{camp:camp});
-        }
-    })
-});
-
-router.put("/:id",function(req,res){
+router.put("/:id",checkOwnership,function(req,res){
    var id = req.params.id;
    Campground.findByIdAndUpdate(id,req.body.campground,function(err,updatedCampground){
        if(err){
@@ -79,15 +75,18 @@ router.put("/:id",function(req,res){
    })
 });
 
-router.delete("/:id",function(req,res){
-   Campground.findByIdAndRemove(req.params.id,function(err){
+router.delete("/:id",checkOwnership,function(req,res){
+    
+        Campground.findByIdAndRemove(req.params.id,function(err){
        if(err){
            res.redirect("/campgrounds");
        }
        else{
            res.redirect("/campgrounds");
        }
-   })
+   });
+    
+   
 });
 
 function isLoggedIn(req,res,next){
@@ -95,6 +94,24 @@ function isLoggedIn(req,res,next){
         return next();
     }
     res.redirect("/login");
+}
+
+function checkOwnership(req,res,next){
+    if(req.isAuthenticated()){
+        Campground.findOne({_id:req.params.id}).populate("comments").exec(function(err, camp) {
+        if(err){
+            res.redirect('back');
+        }
+        else{
+            if(camp.author.id.equals(req.user._id)){
+            next();
+            }
+            else{
+             res.redirect("back");
+            }
+        }
+    });
+}
 }
 
 module.exports = router;
