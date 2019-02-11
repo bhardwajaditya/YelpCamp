@@ -46,7 +46,6 @@ router.get("/:id", function(req,res){
             console.log(err);
         }
         else{
-
             res.render("show",{camp:camp,url:url});
         }
     })
@@ -61,6 +60,7 @@ router.get("/:id/edit",checkOwnership,function(req, res) {
     });
    });
    
+
    
 
 router.put("/:id",checkOwnership,function(req,res){

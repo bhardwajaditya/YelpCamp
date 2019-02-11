@@ -33,6 +33,38 @@ router.post("/comments",isLoggedIn,function(req, res) {
     })
 });
 
+router.get("/:cid/edit",function(req, res) {
+   var id = req.params.cid;
+   
+    Comment.findOne({_id:id}).exec(function(err, comment) {
+        if(err)
+        console.log(err);
+        else
+        res.render("cedit",{comment:comment, id:req.params.id});
+    });
+   });
+   
+router.put("/comments/:cid",checkOwnership,function(req,res){
+   var id = req.params.cid;
+   Comment.findByIdAndUpdate(id,req.body.comment,function(err,comment){
+       if(err){
+           res.redirect("/campgrounds");
+       }
+       else{
+           res.redirect("/campgrounds/");
+       }
+   })
+});
+
+router.delete("/comments/:cid",checkOwnership,function(req,res){
+   var id = req.params.cid;
+   Comment.findByIdAndRemove(id,function(err,comment){
+      if(err)
+      res.redirect("/campgrounds");
+      else
+      res.redirect("/campgrounds");
+   });
+});
 
 
 function isLoggedIn(req,res,next){
@@ -40,6 +72,24 @@ function isLoggedIn(req,res,next){
         return next();
     }
     res.redirect("/login");
+}
+
+function checkOwnership(req,res,next){
+    if(req.isAuthenticated()){
+        Comment.findOne({_id:req.params.id}).exec(function(err, comment) {
+        if(err){
+            res.redirect('back');
+        }
+        else{
+            if(comment.author.id.equals(req.user._id)){
+            next();
+            }
+            else{
+             res.redirect("back");
+            }
+        }
+    });
+}
 }
 
 module.exports = router;
