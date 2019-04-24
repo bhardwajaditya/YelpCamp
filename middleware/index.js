@@ -14,7 +14,8 @@ middlewareObj.checkCommentOwnership = function(req,res,next){
             next();
             }
             else{
-             res.redirect("back");
+                req.flash("error","You need to be logged in");
+                res.redirect("back");
             }
         }
     });
@@ -32,7 +33,8 @@ middlewareObj.checkCampgroundOwnership = function(req,res,next){
             next();
             }
             else{
-             res.redirect("back");
+                req.flash("error","You need to be logged in");
+                res.redirect("back");
             }
         }
     });
