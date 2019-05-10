@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/yelpcamp");
+mongoose.connect("mongodb+srv://Aditya:inverter@cluster0-kulfh.mongodb.net/yelpcamp");
 
 var CampgroundSchema= new mongoose.Schema({
   name:String,
